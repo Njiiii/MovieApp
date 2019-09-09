@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Button } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Button, TextInput } from 'react-native';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 
@@ -19,7 +19,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 24,
     padding: 10,
-  }  
+  },
+  
+  /* This is for making the search textbox look nicer */
+  textfield: {
+    backgroundColor: 'white',
+    padding: 5,
+    borderColor: 'black',
+    borderWidth: 1,
+
+  }
 });
 
 
@@ -34,6 +43,7 @@ class MainMenu extends React.Component {
   state = {
     loading: true,
     error:  false,
+    text: "",
   }
 
   componentDidMount = async () => {
@@ -67,13 +77,22 @@ class MainMenu extends React.Component {
       )
     }
 
-    /* All the buttons are wrapped in their own views, because otherwise
-    the buttons would be stuck together. We don't want that because it hurts
+    /* All the UI elements are wrapped in their own views, because otherwise
+    they would be stuck together. We don't want that because it hurts
     usability of the app */
     return (
     <View style={styles.container}>
+      
+      <View style={styles.textfield}>
+        <TextInput
+          onChangeText={(text) => this.setState({text})} 
+          placeholder="Search for a movie"
+          clearButtonMode='always'
+        />
+      </View>
+
       <View style={styles.mainmenubuttons}>
-        <Button title="Search" onPress={() => navigate('Search', {name: 'Search'})}/>
+        <Button title="Search"/>
       </View>
 
       <View style={styles.mainmenubuttons}>
@@ -92,57 +111,7 @@ class MainMenu extends React.Component {
 
 
 
-//Search screen
-//Here you can search for movies you want
-class SearchScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Search'
-  };
 
-  state = {
-    loading: true,
-    error: false,
-  }
-
-  componentDidMount = async () => {
-    try {
-      this.setState({loading: false})
-    } catch(e) {
-      this.setState({loading:false, error: true})
-    }
-  }
-
-  render() {
-    const {navigate} = this.props.navigation;
-
-    //If screen is loading, show loading icon
-    if (this.state.loading) {
-      return (
-        <View>
-          <ActivityIndicator animating={true} />
-        </View>
-      )
-    }
-
-    //If there was an error while loading screen, show error notification
-    if (this.state.error) {
-      <View>
-        <Text>
-          Failed to load search screen
-        </Text>
-      </View>
-    }
-
-    return (
-      <View>
-        <Text>
-          SEARCH SCREEN
-        </Text>
-      </View>
-    )
-  }
-
-}//class SearchScreen
 
 
 
@@ -255,7 +224,6 @@ class PopularScreen extends React.Component {
 const AppNavigator = createStackNavigator(
   {
     Menus: MainMenu,
-    Search: SearchScreen,
     NewReleases: NewReleasesScreen,
     Popular: PopularScreen,
   },
