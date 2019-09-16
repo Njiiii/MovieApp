@@ -40,10 +40,14 @@ class MainMenu extends React.Component {
     title: "Main menu"
   }
 
-  state = {
-    loading: true,
-    error:  false,
-    text: "",
+  constructor(props) {
+    super(props)
+    this.state = {
+      loading: true,
+      error:  false,
+      text: "",
+      apikey: "3510d4eaa8f5a73f36046c09e64492de"
+    }
   }
 
   componentDidMount = async () => {
@@ -87,12 +91,11 @@ class MainMenu extends React.Component {
         <TextInput
           onChangeText={(text) => this.setState({text})} 
           placeholder="Search for a movie"
-          clearButtonMode='always'
-        />
+          />
       </View>
 
       <View style={styles.mainmenubuttons}>
-        <Button title="Search"/>
+        <Button title="Search" onPress={() => navigate('Search', {name: 'Search'})}/>
       </View>
 
       <View style={styles.mainmenubuttons}>
@@ -110,6 +113,63 @@ class MainMenu extends React.Component {
 }//class MainMenu
 
 
+
+class SearchScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Search results'
+  };
+
+  /* SearchScreenin stateihin pitäisi saada MainMenusta "text", johon on laitettu käyttäjän hakukenttään kirjoittama teksti
+    sekä "apikey", jota tarvitaan haku-url:issa */
+  constructor(props) {
+    super(props)
+  }
+
+  componentDidMount = async () => {
+    try {
+      //Haetaan dataa TMDB:stä käyttäjän antaman leffan nimen perusteella
+      const response = await fetch('URL') 
+      const searchresults = await response.json()
+      this.setState({loading: false, searchresults})
+    
+    } catch(e) {
+      this.setState({loading: false, error: true})
+    }
+  }
+  
+  
+  render() {
+    const {navigate} = this.props.navigation;
+
+    //If screen is loading, show loading icon
+    if (this.state.loading) {
+      return (
+        <View>
+          <ActivityIndicator animating={true} />
+        </View>
+      )
+    }
+
+    //If there was an error while loading screen, show error notification
+    if (this.state.error) {
+      <View>
+        <Text>
+          Failed to load search screen
+        </Text>
+      </View>
+    }
+
+    //Show result of the search here
+    return (
+      <View>
+        <Text>
+          {}
+        </Text>
+      </View>
+    )
+  }
+
+}
 
 
 
@@ -224,6 +284,7 @@ class PopularScreen extends React.Component {
 const AppNavigator = createStackNavigator(
   {
     Menus: MainMenu,
+    Search: SearchScreen,
     NewReleases: NewReleasesScreen,
     Popular: PopularScreen,
   },
